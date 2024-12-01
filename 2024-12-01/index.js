@@ -41,8 +41,8 @@ function processAndSortInputToLists(input) {
     return list;
   }, [[], []]);
 
-  lists[0].sort();
-  lists[1].sort();
+  lists[0].sort((a, b) => a - b);
+  lists[1].sort((a, b) => a - b);
 
   return lists;
 }
@@ -79,4 +79,3 @@ const similarity = calculateSimilarity(lists);
 
 console.log(summedDistances);
 console.log(similarity);
-
