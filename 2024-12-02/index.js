@@ -38,12 +38,23 @@ function areLevelsTrendingSafely(levels, direction) {
 
 // Are the levels in this report safe?
 function areLevelsSafe(levels) {
-  const d = determineDirection(levels[0], levels[1]);
+  const direction = determineDirection(levels[0], levels[1]);
+  const safe = areLevelsTrendingSafely(levels, direction);
 
-  // If the levels are stagnent then by definition it's unsafe
-  if (d === 0) return false;
-  
-  return areLevelsTrendingSafely(levels, d);
+  if (safe) return true;
+
+  // Brute force method of checking if any 1-less levels
+  // would be safe.
+  // Room for improvement?
+  for (let i = 0; i < levels.length; i++) {
+    const l = levels.toSpliced(i, 1);
+    const d = determineDirection(l[0], l[1]);
+    const s = areLevelsTrendingSafely(l, d);
+
+    if (s) return true;
+  }
+
+  return false;
 }
 
 // Convert a report into an array of integers
