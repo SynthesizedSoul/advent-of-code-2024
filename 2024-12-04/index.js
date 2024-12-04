@@ -1,7 +1,7 @@
 const fs = require('fs');
 
 const searchWord = 'XMAS';
-const searchWordReversed = 'SAMX';
+const searchWordReversed = searchWord.split('').reverse().join('');
 
 const input = fs.readFileSync('input', { encoding: 'utf8' });
 const lines = input.split('\n');
@@ -27,21 +27,21 @@ let occurences = 0;
 
 for (let i = 0; i < puzzle.length; i++) {
   for (let j = 0; j < puzzle[i].length; j++) {
-    if (j <= puzzle[i].length - 4) {
+    if (j <= puzzle[i].length - searchWord.length) {
       if (checkDirection(puzzle, i, j, [0, 1])) occurences++;
 
-      if (i <= puzzle.length - 4) {
+      if (i <= puzzle.length - searchWord.length) {
         if (checkDirection(puzzle, i, j, [1, 1])) occurences++;
       }
     }
   
-    if (j >= 3) {
-      if (i <= puzzle.length - 4) {
+    if (j >= searchWord.length - 1) {
+      if (i <= puzzle.length - searchWord.length) {
         if (checkDirection(puzzle, i, j, [1, -1])) occurences++;
       }
     }
 
-    if (i <= puzzle.length - 4) {
+    if (i <= puzzle.length - searchWord.length) {
       if (checkDirection(puzzle, i, j, [1, 0])) occurences++;
     }
   }
