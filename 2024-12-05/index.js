@@ -2,7 +2,7 @@ const fs = require('fs');
 
 const input = fs.readFileSync('input', { encoding: 'utf8' });
 const lines = input.split('\n');
-const rules = [];
+const rules = {};
 const updates = [];
 
 let delimiterReached = false;
@@ -14,7 +14,11 @@ for (let i = 0; i < lines.length; i++) {
   }
 
   if (!delimiterReached) {
-    rules.push(lines[i].split('|').map((v) => parseInt(v, 10)));
+    const rule = lines[i].split('|').map((v) => parseInt(v, 10));
+
+    if (!Object.hasOwn(rules, rule[0])) rules[rule[0]] = [];
+
+    rules[rule[0]].push(rule[1]);
   } else {
     updates.push(lines[i].split(',').map((v) => parseInt(v, 10)));
   }
@@ -25,11 +29,7 @@ const sum = updates.reduce((s, update) => {
     for (let i = index; i < update.length; i++) {
       const y = update[i];
 
-      for (let j = 0; j < rules.length; j++) {
-        const rule = rules[j];
-
-        if (x === rule[1] && y === rule[0]) return false;
-      }
+      if (rules[y] && rules[y].some((v) => v === x)) return false;
     }
 
     return true;
@@ -37,12 +37,9 @@ const sum = updates.reduce((s, update) => {
 
   if (!valid) {
     update.sort((a, b) => {
-      const rule = rules.find((r) => (r[0] === a && r[1] === b));
-      const rule2 =  rules.find((r) => (r[0] === b && r[1] === a));
-  
-      if (rule) {
+      if (rules[a] && rules[a].some((v) => v === b)) {
         return -1;
-      } else if (rule2) {
+      } else if (rules[b] && rules[b].some((v) => v === a)) {
         return 1;
       } else {
         return 0;
