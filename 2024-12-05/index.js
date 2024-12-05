@@ -29,14 +29,28 @@ const sum = updates.reduce((s, update) => {
         const rule = rules[j];
 
         if (x === rule[1] && y === rule[0]) return false;
-        if (y === rule[0] && x === rule[1]) return false;
       }
     }
 
     return true;
   });
 
-  return valid ? s += update[(update.length - 1) / 2] : s;
+  if (!valid) {
+    update.sort((a, b) => {
+      const rule = rules.find((r) => (r[0] === a && r[1] === b));
+      const rule2 =  rules.find((r) => (r[0] === b && r[1] === a));
+  
+      if (rule) {
+        return -1;
+      } else if (rule2) {
+        return 1;
+      } else {
+        return 0;
+      }
+    });
+  }
+
+  return !valid ? s += update[(update.length - 1) / 2] : s;
 }, 0);
 
 console.log(sum);
