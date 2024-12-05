@@ -1,6 +1,8 @@
 const fs = require('fs');
 
 const input = fs.readFileSync('input', { encoding: 'utf8' });
+
+const start = performance.now();
 const lines = input.split('\n');
 const rules = {};
 const updates = [];
@@ -50,4 +52,7 @@ const sum = updates.reduce((s, update) => {
   return !valid ? s += update[(update.length - 1) / 2] : s;
 }, 0);
 
+const end = performance.now();
+
 console.log(sum);
+console.log(`Execution time: ${end - start} ms`);
