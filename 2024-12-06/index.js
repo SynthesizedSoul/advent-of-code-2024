@@ -19,7 +19,6 @@ const directions = {
     next: '^',
   },
 };
-const directionsOrientation = ['^', '>', 'v', '<'];
 const lines = input.split('\n');
 const startingLoc = [0, 0];
 const map = lines.map((line, index) => {
@@ -49,7 +48,7 @@ function setMapVal(loc, val) {
   map[loc[0]][loc[1]] = val;
 }
 
-const visitedLocs = [];
+const visitedLocs = {};
 let loc = startingLoc;
 
 while (true) {
@@ -58,8 +57,12 @@ while (true) {
   const movementDirectionVal = movementDirection.val;
   const nextLoc = [loc[0] + movementDirectionVal[0], loc[1] + movementDirectionVal[1]];
   
-  // Log that we visited this node
-  if (!visitedLocs.find(l => l[0] === loc[0] && l[1] === loc[1])) visitedLocs.push(loc);
+  // Log that we visited this node and what direction
+  if (!Object.hasOwn(visitedLocs, loc.join(':'))) {
+    visitedLocs[loc.join(':')] = [];
+  }
+
+  if (visitedLocs[loc.join(':')].indexOf(mapVal) === -1) visitedLocs[loc.join(':')].push(mapVal);
 
   // Time to exit!
   if (!withinBounds(nextLoc)) break;
@@ -76,4 +79,4 @@ while (true) {
   }
 }
 
-console.log(visitedLocs.length);
+console.log(visitedLocs);
