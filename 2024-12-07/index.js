@@ -8,12 +8,13 @@ const lines = input.split('\n');
 const operations = {
   '+': (a, b) => a + b,
   '*': (a, b) => a * b,
+  '|': (a, b) => parseInt(a.toString() + b.toString(), 10)
 };
 
 const generateCombinations = (n) =>
   n <= 0
     ? ['']
-    : generateCombinations(n - 1).flatMap(r => [r + '+', r + '*']);
+    : generateCombinations(n - 1).flatMap(r => Object.keys(operations).map((o) => r + o));
 
 const sum = lines.reduce((s, line) => {
   let [answer, numbersString] = line.split(':');
