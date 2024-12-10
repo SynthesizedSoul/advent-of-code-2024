@@ -60,8 +60,7 @@ for (let i = 0; i < topographicalMap.length; i++) {
 
   if (height === 0) {
     const accessibleTrailEnds = followPath(i);
-    const uniqueAccessibleTrailEnds = [...new Set(accessibleTrailEnds)].length;
-    totalScore += uniqueAccessibleTrailEnds;
+    totalScore += accessibleTrailEnds.length;
   }
 }
 
