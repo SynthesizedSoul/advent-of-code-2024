@@ -28,17 +28,45 @@ const antinodes = uniqueAntennas.reduce((a, uniqueAntenna) => {
       if (locs.antennas.length > 1) {
         for (let j = 0; j < locs.antennas.length - 1; j++) {
           const compareAntennaLoc = locs.antennas[j];
-          const distance = [(compareAntennaLoc[0] - antennaLoc[0]) * 2, (compareAntennaLoc[1] - antennaLoc[1]) * 2];
+          const distance = [(compareAntennaLoc[0] - antennaLoc[0]), (compareAntennaLoc[1] - antennaLoc[1])];
 
-          const antinode1 = [antennaLoc[0] + distance[0], antennaLoc[1] + distance[1]];
-          const antinode2 = [compareAntennaLoc[0] - distance[0], compareAntennaLoc[1] - distance[1]];
+          const antinodes1 = [];
+          const antinodes2 = [];
 
-          if (withinBounds(antinode1, rows, columns)) {
-            locs.antinodes.push(antinode1);
+          let index = 0;
+          let antinode = [antennaLoc[0], antennaLoc[1]];
+
+          while (withinBounds(antinode, rows, columns)) {
+            antinodes1.push(antinode);
+
+            index++;
+            antinode = [antennaLoc[0] + (distance[0] * index), antennaLoc[1] + (distance[1] * index)];
           }
-          
-          if (withinBounds(antinode2, rows, columns)) {
-            locs.antinodes.push(antinode2);
+
+          index = 0;
+          antinode = [antennaLoc[0], antennaLoc[1]];
+
+          while (withinBounds(antinode, rows, columns)) {
+            antinodes2.push(antinode);
+
+            index++;
+            antinode = [antennaLoc[0] - (distance[0] * index), antennaLoc[1] - (distance[1] * index)];
+          }
+
+          for (let k = 0; k < antinodes1.length; k++) {
+            const antinode = antinodes1[k];
+
+            if (withinBounds(antinode, rows, columns)) {
+              locs.antinodes.push(antinode);
+            }
+          }
+
+          for (let k = 0; k < antinodes2.length; k++) {
+            const antinode = antinodes2[k];
+
+            if (withinBounds(antinode, rows, columns)) {
+              locs.antinodes.push(antinode);
+            }
           }
         }
       }
