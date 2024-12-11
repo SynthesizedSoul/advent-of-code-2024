@@ -1,37 +1,58 @@
+const { Worker } = require('worker_threads');
 const fs = require('fs');
 
-const stones = fs.readFileSync('input', { encoding: 'utf8' }).split(' ');
+const MAX_WORKERS = 4;
+const stones = fs
+  .readFileSync('input', { encoding: 'utf8' })
+  .split(' ');
 
-const rules = [
-  {
-    test: stone => stone === '0',
-    transform: (stones, _, index) => stones[index] = '1'
-  },
-  {
-    test: stone => stone.length % 2 === 0,
-    transform: (stones, stone, index) => stones.splice(index, 1, (+stone.substring(0, stone.length / 2)).toString(), (+stone.substring(stone.length / 2)).toString()),
-  },
-  {
-    test: () => true,
-    transform: (stones, stone, index) => stones[index] = (+stone * 2024).toString(),
-  },
-];
+const chunkIntoN = (arr, n) => {
+  const size = Math.ceil(arr.length / n);
+  return Array.from({ length: n }, (v, i) =>
+    arr.slice(i * size, i * size + size)
+  );
+};
 
-let iterations = 25;
+async function computeStones(stones, iterations = 25) {
+  const start = performance.now();
+  const workers = [];
+  const chunks = chunkIntoN(stones, Math.min(MAX_WORKERS, stones.length));
 
-for (let i = 0; i < iterations; i++) {
-  for (let j = stones.length - 1; j >= 0; j--) {
-    const stone = stones[j];
-
-    for (let k = 0; k < rules.length; k++) {
-      const rule = rules[k];
-
-      if (rule.test(stone)) {
-        rule.transform(stones, stone, j);
-        break;
-      }
-    }
+  for (let i = 0; i < chunks.length; i++) {
+    const worker = new Worker('./worker.js', { workerData: { stones: chunks[i], iterations: iterations } });
+    const p = new Promise((resolve, reject) => {
+      worker.on('message', (stoneResults) => resolve(stoneResults));
+      worker.on('error', () => reject());
+    });
+  
+    workers.push(p);
   }
+
+  return Promise
+    .all(workers)
+    .then(results => {
+      const mergedStones = {};
+
+      results.forEach(r => {
+        Object.keys(r).forEach(k => {
+          mergedStones[k] = (mergedStones[k] || 0) + r[k];
+        });
+      });
+
+      const end = performance.now();
+
+      console.log(`Execution time: ${end - start} ms`);
+
+      return mergedStones;
+    });
 }
 
-console.log(stones.length);
+const start = performance.now();
+
+computeStones(stones, 75)
+  .then(results => {
+    const end = performance.now();
+
+    console.log(Object.values(results).reduce((s, v) => s += v, 0));
+    console.log(`Execution time: ${end - start} ms`);
+  });
