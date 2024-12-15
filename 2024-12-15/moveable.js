@@ -8,13 +8,21 @@ export default class Moveable extends Positionable {
     '<': [-1, 0],
   };
 
+  reverse() {
+    this.x = this.prevX;
+    this.y = this.prevY;
+  }
+
   move(warehouse, direction) {
     const movement = Moveable.DIRECTIONS[direction];
     const newX = this.x + movement[0];
     const newY = this.y + movement[1];
-    const collisionObj = warehouse.objectAt(newX, newY);
+    const collisionObjs = Array(this.width)
+                          .fill(null)
+                          .map((_, index) => warehouse.objectAt(newX + index, newY))
+                          .filter((o, index, self) => self.indexOf(o) === index && o !== null && o !== this);
 
-    if (collisionObj !== null) {
+    const moved = collisionObjs.filter((collisionObj) => {
       if (typeof collisionObj.push === 'function') {
         const result = collisionObj.push(warehouse, direction);
 
@@ -22,6 +30,13 @@ export default class Moveable extends Positionable {
       } else {
         return false;
       }
+
+      return true;
+    });
+
+    if (moved.length !== collisionObjs.length) {
+      moved.forEach((m) => m.reverse());
+      return false;
     }
 
     this.prevX = this.x;

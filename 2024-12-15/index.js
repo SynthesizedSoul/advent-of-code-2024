@@ -17,20 +17,20 @@ let height = mapDescriptionLines.length;
 for (let i = 0; i < mapDescriptionLines.length; i++) {
   const line = mapDescriptionLines[i].split('');
 
-  width = line.length;
+  width = line.length * 2;
 
   for (let j = 0; j < line.length; j++) {
     const c = line[j];
 
     switch (c) {
       case '#':
-        walls.push(new Wall(j, i));
+        walls.push(new Wall(j * 2, i, 2));
         break;
       case 'O':
-        boxes.push(new Box(j, i));
+        boxes.push(new Box(j * 2, i, 2));
         break;
       case '@':
-        robot = new Robot(j, i, moves);
+        robot = new Robot(j * 2, i, moves);
         break;
       default:
         break;

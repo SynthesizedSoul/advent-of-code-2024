@@ -27,24 +27,32 @@ export default class Warehouse {
   }
 
   render() {
+    const colorize = (color, output) => ['\x1b[', color, 'm', output, '\x1b[0m'].join('');
+
     for (let i = 0; i < this.map.length; i++) {
-      let row = '';
+      let lastObj = null;
 
       for (let j = 0; j < this.map[i].length; j++) {
         const obj = this.map[i][j];
 
         if (obj === null) {
-          row += '.';
+          process.stdout.write(colorize(30, '.'));
         } else if (obj instanceof Wall) {
-          row += '#';
+          process.stdout.write(colorize(33, '#'));
         } else if (obj instanceof Box) {
-          row += 'O';
+          if (lastObj !== obj) {
+            process.stdout.write(colorize(91, '['));
+          } else {
+            process.stdout.write(colorize(91, ']'));
+          }
         } else if (obj instanceof Robot) {
-          row += '@';
+          process.stdout.write(colorize(35, '@'));
         }
+
+        lastObj = obj;
       }
 
-      console.log(row);
+      process.stdout.write('\n');
     }
   }
 
@@ -52,11 +60,15 @@ export default class Warehouse {
     for (let i = 0; i < objects.length; i++) {
       const obj = objects[i];
 
-      if (this.map[obj.prevY][obj.prevX] === obj) {
-        this.map[obj.prevY][obj.prevX] = null;
+      for (let j = 0; j < obj.width; j++) {
+        if (this.map[obj.prevY][obj.prevX + j] === obj) {
+          this.map[obj.prevY][obj.prevX + j] = null;
+        }
       }
       
-      this.map[obj.y][obj.x] = obj;
+      for (let j = 0; j < obj.width; j++) {
+        this.map[obj.y][obj.x + j] = obj;
+      }
     }
   }
 }
