@@ -1,3 +1,3 @@
-import Moveable from "./moveable.js";
+import Moveable from './moveable.js';
 
-export default class Box {}
+export default class Box extends Moveable {}

@@ -1,25 +1,32 @@
-import Positionable from "./positionable.js";
-
-const DIRECTIONS = {
-  '^': [0, -1],
-  '>': [1, 0],
-  'v': [0, 1],
-  '<': [-1, 0],
-};
+import Positionable from './positionable.js';
 
 export default class Moveable extends Positionable {
-  constructor(x, y) {
-    this.prevX = x;
-    this.prevY = y;
-  }
+  static DIRECTIONS = {
+    '^': [0, -1],
+    '>': [1, 0],
+    'v': [0, 1],
+    '<': [-1, 0],
+  };
 
-  move(direction) {
-    const movement = DIRECTIONS[direction];
+  move(warehouse, direction) {
+    const movement = Moveable.DIRECTIONS[direction];
+    const newX = this.x + movement[0];
+    const newY = this.y + movement[1];
+    const collisionObj = warehouse.objectAt(newX, newY);
+
+    if (collisionObj !== null) {
+      if (collisionObj instanceof Pushable) {
+        const result = collisionObj.push(warehouse, direction);
+
+        if (!result) return false;
+      }
+    }
 
     this.prevX = this.x;
     this.prevY = this.y;
-
     this.x += movement[0];
     this.y += movement[1];
+
+    return true;
   }
 }

@@ -1,9 +1,15 @@
-import Moveable from "./moveable.js";
+import Moveable from './moveable.js';
 
 export default class Robot extends Moveable {
-  constructor(x, y) {
+  constructor(x, y, moves) {
+    super(x, y);
 
+    this.moves = moves;
   }
 
-  move(direction) {}
+  tick(warehouse) {
+    const direction = this.moves.splice(1, 1);
+
+    this.move(warehouse, direction);
+  }
 }
