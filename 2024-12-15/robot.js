@@ -8,7 +8,7 @@ export default class Robot extends Moveable {
   }
 
   tick(warehouse) {
-    const direction = this.moves.splice(1, 1);
+    const direction = this.moves.splice(0, 1);
 
     this.move(warehouse, direction);
   }

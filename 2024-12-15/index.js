@@ -5,7 +5,7 @@ import Wall from './wall.js';
 import Warehouse from './warehouse.js';
 
 const [mapDescription, movesDescription] = fs.readFileSync('input', { encoding: 'utf8' }).split(/^\n/m);
-const moves = movesDescription.split('');
+const moves = movesDescription.replaceAll('\n', '').split('');
 
 const mapDescriptionLines = mapDescription.trim().split('\n');
 const walls = [];
@@ -42,6 +42,12 @@ const warehouse = new Warehouse(width, height, walls, boxes, robot);
 
 warehouse.render();
 
-warehouse.tick();
+const moveLength = moves.length;
+for (let i = 0; i < moveLength; i++) {
+  warehouse.tick();
+}
 
+console.log();
 warehouse.render();
+console.log();
+console.log(boxes.reduce((s, b) => s += b.gpsCoordinate(), 0));

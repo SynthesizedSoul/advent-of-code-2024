@@ -11,8 +11,6 @@ export default class Warehouse {
     this.boxes = boxes;
     this.robot = robot;
 
-    console.log(this.width, this.height);
-
     this.#updateMap(walls);
     this.#updateMap(boxes);
     this.#updateMap([robot]);

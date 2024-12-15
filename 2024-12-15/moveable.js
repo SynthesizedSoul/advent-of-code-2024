@@ -15,10 +15,12 @@ export default class Moveable extends Positionable {
     const collisionObj = warehouse.objectAt(newX, newY);
 
     if (collisionObj !== null) {
-      if (collisionObj instanceof Pushable) {
+      if (typeof collisionObj.push === 'function') {
         const result = collisionObj.push(warehouse, direction);
 
         if (!result) return false;
+      } else {
+        return false;
       }
     }
 
