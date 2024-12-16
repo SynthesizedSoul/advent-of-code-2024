@@ -7,9 +7,12 @@ export default class Robot extends Moveable {
     this.moves = moves;
   }
 
-  tick(warehouse) {
+  tick(warehouse, count = null) {
     const direction = this.moves.splice(0, 1);
 
-    this.move(warehouse, direction);
+    const moved = [];
+    const succeeded = this.move(warehouse, direction, moved, count);
+
+    if (!succeeded) [...new Set(moved)].forEach((m) => m.reverse());
   }
 }

@@ -3,7 +3,5 @@ export default class Positionable {
     this.x = x;
     this.y = y;
     this.width = width;
-    this.prevX = x;
-    this.prevY = y;
   }
 }

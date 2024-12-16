@@ -8,41 +8,53 @@ export default class Moveable extends Positionable {
     '<': [-1, 0],
   };
 
-  reverse() {
-    this.x = this.prevX;
-    this.y = this.prevY;
+  constructor(x, y, width = 1) {
+    super(x, y, width);
+
+    this.locationsVisited = [[x, y]];
+    this.prevX = this.x;
+    this.prevY = this.y;
   }
 
-  move(warehouse, direction) {
+  reverse() {
+    const lastLoc = this.locationsVisited.pop();
+    const newLastLoc = this.locationsVisited[this.locationsVisited.length - 1];
+
+    this.x = lastLoc[0];
+    this.y = lastLoc[1];
+    this.prevX = newLastLoc ? newLastLoc[0] : lastLoc[0];
+    this.prevX = newLastLoc ? newLastLoc[1] : lastLoc[1];
+  }
+
+  move(warehouse, direction, moved = [], tickCount = null) {
     const movement = Moveable.DIRECTIONS[direction];
     const newX = this.x + movement[0];
     const newY = this.y + movement[1];
-    const collisionObjs = Array(this.width)
-                          .fill(null)
-                          .map((_, index) => warehouse.objectAt(newX + index, newY))
-                          .filter((o, index, self) => self.indexOf(o) === index && o !== null && o !== this);
+    const collisionObjs = [];
 
-    const moved = collisionObjs.filter((collisionObj) => {
-      if (typeof collisionObj.push === 'function') {
-        const result = collisionObj.push(warehouse, direction);
+    for (let i = newX; i < newX + this.width; i++) {
+      const collisionObj = warehouse.objectAt(i, newY);
 
-        if (!result) return false;
-      } else {
-        return false;
+      if (collisionObj !== null && collisionObj !== this && collisionObjs.indexOf(collisionObj) === -1 && moved.indexOf(collisionObj) === -1) {
+        collisionObjs.push(collisionObj);
       }
+    }
 
-      return true;
+    const m = collisionObjs.filter((collisionObj) => {
+      return typeof collisionObj.push === 'function' && collisionObj.push(warehouse, direction, moved, tickCount);
     });
 
-    if (moved.length !== collisionObjs.length) {
-      moved.forEach((m) => m.reverse());
+    if (m.length !== collisionObjs.length) {
       return false;
     }
 
+    this.locationsVisited.push([this.x, this.y]);
     this.prevX = this.x;
     this.prevY = this.y;
-    this.x += movement[0];
-    this.y += movement[1];
+    this.x = newX;
+    this.y = newY;
+
+    moved.push(this);
 
     return true;
   }
